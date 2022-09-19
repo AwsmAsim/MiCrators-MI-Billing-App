@@ -117,7 +117,7 @@ class OperatorModel {
     if (!loggedIn) {
       try{
         var response = await http.post(Uri.parse(backendUrlPc + 'user'),
-            body: {'username': username, 'password': password}
+            body: {'username': username, 'password': password, 'pos_id': posId}
         );
         if(response.statusCode == 200){
           var decodedResponse = jsonDecode(response.body)[0] as Map<String, dynamic>;

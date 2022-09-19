@@ -16,6 +16,66 @@ class PreviousSearchController extends GetxController{
 
   var previoudPayments = <TransactionTab>[].obs;
   PreviousSearchModel previousSearchModel = PreviousSearchModel();
+  var phoneNumberSearch = false.obs;
+
+  alterPhoneNumberSearch(bool value){
+    if(phoneNumberSearch.value == true && value==false){
+
+      getPrevioudPayments();
+    }
+      phoneNumberSearch.value = value;
+  }
+
+  getPrevioudPayments() async{
+    var transactionBox = Hive.box(prevTransactions);
+    var localDataBox = Hive.box(local_data);
+
+
+    // await transactionBox.clear();
+
+
+
+    for(int i = 0; i < transactionBox.length; i++){
+      var transaction = transactionBox.getAt(i);
+      print(transaction['pos_id'] == localDataBox.get('pos_id'));
+      previoudPayments.add(TransactionTab(transactionId: transaction['transaction_id'], customerId: transaction['cus_ph'],
+          cus_name: transaction['cus_name'], cost: transaction['amount'], transactionTime: transaction['date'].toString() ));
+    }
+
+
+    var prevSearches1 = await previousSearchModel.getPreviousSearches();
+    // print(prevSearches1);
+    List prevSearches = prevSearches1;
+    // print('prevSearches');
+    // print(prevSearches);
+
+    for(Map<String, dynamic> searchModel in prevSearches){
+      var transactionId = searchModel['transaction_id'];
+      print(transactionId);
+      if(transactionBox.containsKey(transactionId)) continue;
+      transactionBox.put(transactionId, searchModel);
+      previoudPayments.add(TransactionTab(transactionId: transactionId, customerId: searchModel['cus_ph'],
+          cus_name: searchModel['cus_name'], cost: searchModel['amount'], transactionTime: searchModel['date'].toString() ));
+    }
+  }
+
+  getPrevioudPaymentsByCustomer(String cus_ph) async{
+    previoudPayments.value = [];
+    phoneNumberSearch.value = true;
+    var response = await previousSearchModel.getPreviousCustomerTransactions(cus_ph);
+
+    List prevSearches = response;
+    // print('prevSearches');
+    // print(prevSearches);
+
+    for(Map<String, dynamic> searchModel in prevSearches){
+      var transactionId = searchModel['transaction_id'];
+      previoudPayments.add(TransactionTab(transactionId: transactionId, customerId: searchModel['cus_ph'],
+          cus_name: searchModel['cus_name'], cost: searchModel['amount'], transactionTime: searchModel['date'].toString() ));
+    }
+
+  }
+
 
   @override
   void onInit() async {

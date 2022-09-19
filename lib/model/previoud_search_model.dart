@@ -10,6 +10,20 @@ import 'package:mi_crators/model/search_tab_model.dart';
 
 class PreviousSearchModel{
 
+  Future<List> getPreviousCustomerTransactions(String phone_no) async{
+    
+    try{
+      var response = await http.get(Uri.parse(getHostUrl() + 'customer/transactions/' + phone_no));
+      if(response.statusCode == 200){
+        return jsonDecode(response.body);
+      }else return [];
+
+    }catch(err){
+      return [];
+    }
+    
+  }
+  
   Future<List> getPreviousSearches() async{
     try{
       var localDataBox = Hive.box(local_data);

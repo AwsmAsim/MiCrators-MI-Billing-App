@@ -6,6 +6,7 @@ import 'package:mi_crators/controller/customer_controller.dart';
 import 'package:mi_crators/controller/stock_controller.dart';
 import 'package:mi_crators/screens/components/dashboard_pc.dart';
 import 'package:mi_crators/screens/components/dashboard_phone.dart';
+import 'package:mi_crators/screens/home_page.dart';
 import 'package:mi_crators/screens/new_payment.dart';
 
 import '../controller/cart_controller.dart';
@@ -48,7 +49,13 @@ class DashBoard extends StatelessWidget {
                 child: const Icon(Icons.add),
               );
             }),
-      appBar: createAppBar(title: "Dashboard", backButton: false),
+      appBar: createAppBar(title: "Dashboard", backButton: false, logout: GestureDetector(child: Icon(Icons.logout), onTap: () async{
+        Hive.box(local_data).clear();
+        Hive.box(prevTransactions).clear();
+        await Hive.lazyBox(stock).clear();
+        Hive.box(succesfulTransactions).clear();
+        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => MyHomePage()), (route) => false);
+      },)),
       body: size.width > 900
           ? DashPC(name, paymentsAuthorised, posId, gender, age)
           : DashPhone(name, paymentsAuthorised, posId, gender, age),

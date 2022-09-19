@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:io' show Platform;
 
+import 'package:hive/hive.dart';
+
 Color primaryColor = const Color.fromRGBO(255, 105, 0, 1);
 String backendUrlMobile = 'http://10.0.2.2:3000/';
 String backendUrlPc = 'http://127.0.0.1:3000/';
@@ -12,10 +14,14 @@ String stock = 'stockBox';
 String operatorControllerTag = 'operatorControllerTag';
 
 
-PreferredSizeWidget createAppBar({String? title, bool? backButton}) {
+PreferredSizeWidget createAppBar({String? title, bool? backButton, Widget? logout}) {
   return AppBar(
     title: Text(title!),
     elevation: 10.0,
+    actions: [
+      logout != null ? logout: Container(),
+      SizedBox(width: 5.0,)
+    ],
     backgroundColor: primaryColor,
     automaticallyImplyLeading: backButton!,
   );

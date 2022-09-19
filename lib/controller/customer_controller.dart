@@ -8,6 +8,7 @@ class CustomerController extends GetxController{
   Rx<String> name = "".obs;
   Rx<String> address = "".obs;
   Rx<bool> isRetrieving = false.obs;
+  Rx<bool> isRegistered = false.obs;
   CustomerModel customerModel = CustomerModel();
 
 
@@ -16,9 +17,14 @@ class CustomerController extends GetxController{
     isRetrieving.value = true;
     var response = await customerModel.getCustomerDetails(cus_ph);
     if(response['email'].length == 0){
+      email.value = "";
+      name.value = "";
+      address.value = "";
+      isRegistered.value = false;
       return;
     }
     isRetrieving.value = false;
+    isRegistered.value = true;
     email.value = response['email'].toString();
     name.value = response['cus_name'].toString();
     phoneNo.value = response['cus_ph'].toString();
@@ -34,13 +40,17 @@ class CustomerController extends GetxController{
       return;
     }
     isRetrieving.value = false;
+    isRegistered.value = true;
     email.value = response['email'].toString();
     name.value = response['cus_name'].toString();
     phoneNo.value = response['cus_ph'].toString();
-
+    if(response['address'] == null) return;
     address.value = response['address'];
   }
 
+  alterRegister(bool value){
+    isRegistered.value = value;
+  }
 
 
 

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:hive/hive.dart';
 import 'package:mi_crators/constants.dart';
 import 'package:mi_crators/controller/stock_controller.dart';
 import 'package:mi_crators/screens/new_payment.dart';
@@ -15,6 +16,7 @@ class DashPC extends StatelessWidget {
 
   DashPC(this.name, this.authorisedPayments, this.posId, this.gender, this.age);
   CartController cartController = Get.find();
+  final PreviousSearchController getTransactionsController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +65,9 @@ class DashPC extends StatelessWidget {
                         Text("Gender: $gender"),
                         Text("Age: $age"),
                         Text("Payment Authorised: $authorisedPayments"),
-                        Text("POS ID: $posId")
+                        Text("POS ID: $posId"),
+                        Text("store name: ${Hive.box(local_data).get('store_name')}"),
+                        Text("store type: ${Hive.box(local_data).get('store_type')}")
                       ],
                     )
                   ],
@@ -141,7 +145,12 @@ class DashPC extends StatelessWidget {
                         SizedBox(
                           width: max(size.width - 750, 200),
                           child: TextField(
-                            onChanged: (value) {},
+                            onChanged: (value) async{
+                              if(value.length == 10){
+                                getTransactionsController.alterPhoneNumberSearch(true);
+                                getTransactionsController.getPrevioudPaymentsByCustomer(value);
+                              }else getTransactionsController.alterPhoneNumberSearch(false);
+                            },
                             keyboardType: TextInputType.text,
                             decoration: InputDecoration(
                               enabledBorder: OutlineInputBorder(

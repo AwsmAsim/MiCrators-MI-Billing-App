@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mi_crators/constants.dart';
 import 'package:mi_crators/controller/customer_controller.dart';
+import 'package:mi_crators/controller/previoud_search_controller.dart';
 import 'package:mi_crators/screens/components/checkout_pc.dart';
 import 'package:mi_crators/screens/dashboard.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -25,6 +26,7 @@ class PaymentController extends GetxController {
 class CheckoutPhone extends StatelessWidget {
   CheckoutPhone({Key? key}) : super(key: key);
   PaymentController paymentController = PaymentController();
+  PreviousSearchController previousSearchController = Get.find();
   List<String> deliveryModes = <String>["Pick", "Home-Delivery"];
 
   showAlertDialog(
@@ -138,7 +140,15 @@ class CheckoutPhone extends StatelessWidget {
                       enableFields: true,
                     ),
                     CustomerCard(
-                      onChanged: (_) {},
+                      onChanged: (_) {
+                        if (phoneNo.text.length == 10 && email.text.isEmpty) {
+                          customerController.alterRegister(false);
+                        }
+                        if (phoneNo.text.length == 10 &&
+                            email.text != customerController.email.value) {
+                          customerController.alterRegister(false);
+                        }
+                      },
                       controller: email,
                       title: "Email",
                       keyboardType: TextInputType.emailAddress,
@@ -184,7 +194,14 @@ class CheckoutPhone extends StatelessWidget {
                     ),
                     controller.selectedValue.value == deliveryModes[1]
                         ? CustomerCard(
-                            onChanged: (_) {},
+                            onChanged: (_) {
+                              if (phoneNo.text.length == 10 &&
+                                  address.text !=
+                                      customerController.address.value) {
+                                controller.selectedValue.value = deliveryModes[0];
+
+                              }
+                            },
                             controller: address,
                             title: "Address",
                             keyboardType: TextInputType.text,
@@ -192,6 +209,41 @@ class CheckoutPhone extends StatelessWidget {
                           )
                         : const SizedBox(height: 0, width: 0),
                   ],
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: SizedBox(
+              width: size.width / 2,
+              height: 45,
+              child: Obx(
+                    () => ElevatedButton(
+                  onPressed: () async {
+                    if(customerController.isRegistered.value == false){
+                      await customerController.registerCustomer(phoneNo.text, email.text, address.text, name.text);
+                      customerController.alterRegister(true);
+                    }
+
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: customerController.isRegistered.value ? Colors.grey :  primaryColor,
+                    foregroundColor: Colors.black,
+                    elevation: 20.0,
+                    shadowColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    side: const BorderSide(
+                      color: Colors.black,
+                      width: 0.6,
+                    ),
+                  ),
+                  child: Text(
+                    "Register Controller",
+                    style: const TextStyle(color: Colors.white, fontSize: 20),
+                  ),
                 ),
               ),
             ),
@@ -251,6 +303,24 @@ class CheckoutPhone extends StatelessWidget {
                 child: Obx(
                   () => ElevatedButton(
                     onPressed: () async {
+                      if (customerController.isRegistered.value == false || customerController.email.value.isEmpty || customerController.email.value != email.text) {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text("Register Customer Pls"),
+                                content: const Text("Customer is not registered"),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text("OK"),
+                                  )
+                                ],
+                              );
+                            });
+                      }else
                       if (paymentController.paymentMethod.value == "None") {
                         showDialog(
                             context: context,
@@ -270,7 +340,7 @@ class CheckoutPhone extends StatelessWidget {
                             });
                       } else if (paymentController.paymentMethod.value ==
                           "Online") {
-                        final Uri uri = Uri.parse("https://www.google.com/");
+                        final Uri uri = Uri.parse(getHostUrl() + '/payment/${cartController.total_amount}');
                         launchUrl(uri);
                       } else if (await cartController.sendCartPayment(
                               customerController.phoneNo.value) ==
@@ -283,6 +353,9 @@ class CheckoutPhone extends StatelessWidget {
                               (route) => false);
                         });
                       } else {
+
+                        await previousSearchController.getPrevioudPayments();
+
                         showAlertDialog(context, 'Successful', () {
                           Navigator.pushAndRemoveUntil(
                               context,
@@ -291,6 +364,7 @@ class CheckoutPhone extends StatelessWidget {
                               (route) => false);
                         });
                       }
+
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: primaryColor,

@@ -13,7 +13,7 @@ class CustomerModel{
           "cus_ph" : cus_ph,
           "cus_name" : name,
           "email" : email,
-          "name" : name
+          "address" : name
         })
 
       );
@@ -23,7 +23,7 @@ class CustomerModel{
         "cus_ph" : cus_ph,
         "cus_name" : name,
         "email" : email,
-        "name" : name
+        "address" : name
       };
       } else return {};
     }catch(err){

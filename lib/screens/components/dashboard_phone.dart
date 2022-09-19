@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 
 import '../../constants.dart';
 import '../../controller/previoud_search_controller.dart';
@@ -13,7 +14,7 @@ class DashPhone extends StatelessWidget {
   DashPhone(
       this.name, this.paymentsAuthorised, this.posId, this.gender, this.age);
 
-  final getTransactionsController = Get.put(PreviousSearchController());
+  final PreviousSearchController getTransactionsController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -51,8 +52,8 @@ class DashPhone extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(name),
-                    Text("Gender : $gender"),
-                    Text("Age: $age"),
+                    Text("store name: ${Hive.box(local_data).get('store_name')}"),
+                    Text("store type: ${Hive.box(local_data).get('store_type')}"),
                     Text("Payment Authorised: $paymentsAuthorised"),
                     size.width > 460
                         ? Text("POS ID: $posId")
@@ -72,7 +73,12 @@ class DashPhone extends StatelessWidget {
             SizedBox(
               width: max(size.width - 110, 200),
               child: TextField(
-                onChanged: (value) {},
+                onChanged: (value) {
+                  if(value.length == 10){
+                    getTransactionsController.alterPhoneNumberSearch(true);
+                    getTransactionsController.getPrevioudPaymentsByCustomer(value);
+                  }else getTransactionsController.alterPhoneNumberSearch(false);
+                },
                 keyboardType: TextInputType.text,
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
