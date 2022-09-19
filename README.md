@@ -85,4 +85,20 @@ In you MySQL CLI, execute `SELECT * FROM TRANSACTION;` to see the transaction re
 `SELECT * FROM BILL where transaction_id = (transaction_id from transaction table);` to see the items of the bill.
 Also `SELECT * from Stock where SOLD = 1;` to see the sold items and `Select * from active_warranty;` to see when is the warranty ending for the product.
 
+# Working
+
+
+<p align="center">
+  <img height="400" src="/documentation Images/authentication.png" />
+</p>  
+
+
+<p align="center">
+  <img height="400" src="/documentation Images/checkout.png" />
+</p>  
+
+<p align="center">
+  <img height="400" src="/documentation Images/new_payment.png" />
+</p>  
+
 
