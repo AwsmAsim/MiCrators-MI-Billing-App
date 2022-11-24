@@ -2,6 +2,11 @@ Backend: https://github.com/AwsmAsim/Micrators-Billing-Application-Backend
 
 # MI BILLS Application by MiCrators
 
+<p align="center">
+  <img height="400" src="/documentation Images/mi_app.gif" />
+</p>
+
+
 ### About the application
 MI Bills is a multiplatform application that built to ease the task of vendors and to provide an efficient transaction mechanism. Its Features includes:  
 
@@ -102,5 +107,6 @@ Also `SELECT * from Stock where SOLD = 1;` to see the sold items and `Select * f
 <p align="center">
   <img height="400" src="/documentation Images/new_payment.png" />
 </p>  
+
 
 
